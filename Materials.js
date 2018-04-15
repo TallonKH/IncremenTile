@@ -1,6 +1,4 @@
-function generateMaterialTypes() {
-	mats = {};
-
+function generateMaterialTypes(mats) {
 	mat_bit_alpha.unhidePercentage = 0;
 	mat_bit_alpha.unlockPercentage = 0;
 	mat_bit_alpha.counter = 4;
@@ -22,18 +20,30 @@ function generateMaterialTypes() {
 	mat_pulser_alpha.consumeAction = function(){placing = tile_pulser_alpha;}
 	mats["pulser_alpha"] = (mat_pulser_alpha);
 
+	mat_timer_alpha.unhidePercentage = 0.25;
+	mat_timer_alpha.unlockPercentage = 0.5;
+	mat_timer_alpha.recipe = [[mat_bit_alpha, 32, 1.75, 32]];
+	mat_timer_alpha.associatedTile = mat_timer_alpha;
+	mat_timer_alpha.consumeAction = function(){placing = tile_timer_alpha;}
+	mats["timer_alpha"] = (mat_timer_alpha);
+
+	mat_multiplier_alpha.unhidePercentage = 0.25;
+	mat_multiplier_alpha.unlockPercentage = 0.5;
+	mat_multiplier_alpha.recipe = [[mat_multiplier_alpha, 64, 1.75, 64]];
+	mat_multiplier_alpha.associatedTile = mat_multiplier_alpha;
+	mat_multiplier_alpha.consumeAction = function(){placing = tile_multiplier_alpha;}
+	mats["multiplier_alpha"] = (mat_multiplier_alpha);
+
 	mat_bit_beta.unhidePercentage = 0.125;
 	mat_bit_beta.unlockPercentage = 0.5;
 	mat_bit_beta.craftable = false;
 	mat_bit_beta.consumable = false;
 	mat_bit_beta.recipe = [[mat_bit_alpha, 1024, 1, 1024]];
 	mats["bit_beta"] = (mat_bit_beta);
-
-	return mats;
 }
 
 function interpretRecipes() {
-	for (var i = 0; i < mats.length; i++) {
+	for (var i = 0; i < materialTypes.length; i++) {
 		let mat = mats[i];
 		for (var i = 0; i < mat.recipe.length; i++) {
 			let ingredient = mat.recipe[i][0];

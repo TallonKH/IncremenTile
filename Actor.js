@@ -1,7 +1,9 @@
+let actorTypeDict = {};
 class Actor {
 	constructor() {
 		this.pos = new Point(0, 0);
 		this.scale = 10;
+		this.type = null;
 		this.clickOpacity = clickOpacity.TRANSPARENT;
 		this.onMouseDown = Function.prototype;
 		this.onMouseUp = Function.prototype;
@@ -23,11 +25,25 @@ class Actor {
 			ctx.stroke();
 		}
 	}
+	saveInfo(info){
+		info['type'] = this.type;
+		if(this.pos.x != 0){
+			info['x'] = this.pos.x;
+		}
+		if(this.pos.y != 0){
+			info['y'] = this.pos.y;
+		}
+	};
+
+	loadInfo(info){
+		this.pos = new Point(info["x"] || 0, info["y"] || 0);
+	}
 }
 
 class BGActor extends Actor {
 	constructor() {
 		super();
+		this.type = "background"
 		this.clickOpacity = clickOpacity.OPAQUE;
 		this.isTouching = function(point) {
 			return true;
@@ -44,3 +60,5 @@ class BGActor extends Actor {
 		}
 	}
 }
+actorTypeDict["background"] = BGActor;
+

@@ -1,8 +1,9 @@
 class Grid extends Actor {
-	constructor(dims) {
+	constructor(dims=new Point(1,1)) {
 		super();
 		this.tickable = true;
 		this.dims = dims
+		this.type = "grid";
 		this.tickedTiles = [];
 		this.pendingTick = [];
 		this.clickOpacity = clickOpacity.OPAQUE;
@@ -12,7 +13,7 @@ class Grid extends Actor {
 		this.tileData = makeGrid(dims, function(x, y) {
 			return {};
 		});
-		this.onTick = function(skippedTicks) {
+		this.onTick = function() {
 			this.tickedTiles = this.pendingTick;
 			this.pendingTick = [];
 			for (let i = 0; i < this.tickedTiles.length; i++) {
@@ -20,7 +21,7 @@ class Grid extends Actor {
 				let type = this.getTile(coord);
 				let data = this.getData(coord);
 				data["pendingTick"] = false;
-				type.onTick(this, data, skippedTicks);
+				type.onTick(this, data);
 			}
 		}
 
@@ -42,10 +43,10 @@ class Grid extends Actor {
 		this.onMouseClicked = function(point) {
 			let pointRel = point.subtractp(this.pos);
 			let gridCoord = pointRel.divide1(this.scale).floor();
-			if(placing){
+			if (placing) {
 				this.setTile(gridCoord, placing);
 				placing = null;
-			}else{
+			} else {
 				this.getTile(gridCoord).onMouseClicked(this, this.getData(gridCoord), 1);
 			}
 		}
@@ -58,6 +59,59 @@ class Grid extends Actor {
 					this.tiles[x][y].draw(this, this.tileData[x][y],
 						renderPos.x + x * renderScale, renderPos.y + y * renderScale, renderScale);
 				}
+			}
+		}
+	}
+
+	saveInfo(info) {
+		super.saveInfo(info);
+		let str = "";
+		let data = [];
+		for (let x = 0; x < this.dims.x; x++) {
+			for (let y = 0; y < this.dims.y; y++) {
+				let tile = this.tiles[x][y];
+				str += tile.char;
+				if (tile.preserveInfo) {
+					data.push({
+						"x": x,
+						"y": y,
+						"data": tile.saveInfo(this.tileData[x][y])
+					});
+				}
+			}
+		}
+		info["dx"] = this.dims.x;
+		info["dy"] = this.dims.y;
+		info["gtypes"] = str;
+		if (data.length > 0) {
+			info["gdata"] = data;
+		}
+
+		return str;
+	}
+
+	loadInfo(info) {
+		this.dims.x = info["dx"];
+		this.dims.y = info["dy"];
+		let ddims = new Point(this.dims.x, this.dims.y);
+		this.tiles = makeGrid(ddims, function(x, y) {
+			return tile_empty;
+		});
+		this.tileData = makeGrid(ddims, function(x, y) {
+			return {};
+		});
+		let types = info["gtypes"];
+		let n=0;
+		for (let x = 0; x < this.dims.x; x++) {
+			for (let y = 0; y < this.dims.y; y++) {
+				this.setTile(new Point(x,y),tileCharDict[types[n]]);
+				n++;
+			}
+		}
+		for(let d in info["gdata"]){
+			let existing = this.tileData[d["x"]][d["y"]];
+			for(let a in d){
+				existing[a] = d[a];
 			}
 		}
 	}
@@ -126,6 +180,7 @@ class Grid extends Actor {
 		};
 	}
 }
+actorTypeDict["grid"] = Grid;
 
 function makeGrid(dims, type) {
 	grid = [];

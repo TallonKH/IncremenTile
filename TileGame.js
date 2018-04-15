@@ -1,8 +1,10 @@
+let charset = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 let mainFlex = document.getElementById("main-flex");
 let canvas = document.getElementById("grid-canvas");
 let ctx = canvas.getContext("2d");
 let matListDiv = document.getElementById("list-materials");
 let currentWorld = null;
+let worlds = {};
 
 let mouseDown = false;
 let canvasSize = 100;
@@ -20,95 +22,74 @@ let zoom = 1; // DO NOT CHANGE THIS
 let dim = 1;
 let placing = null;
 
-let longRefreshCounter = 0;
-let longRefreshInterval = 10;
-let secondCounter = 0;
-let ticksPerSecond = 1000 / 30;
-let secondsOverflowCounter = 0;
+let tickCounter = 0
 
-let tileTypes;
-let materialTypes;
+let tileList = [];
+let tileCharDict = {};
+let materialTypes = {};
 let matList;
 let lockedMats;
 let recipes;
+
 let TAU = Math.PI * 2;
 
 function main() {
-	tileTypes = generateTileTypes();
-	materialTypes = generateMaterialTypes();
+	generateTileTypes(tileList, tileCharDict);
+	generateMaterialTypes(materialTypes);
 	matList = Object.values(materialTypes);
 	lockedMats = Object.keys(materialTypes);
 	recipes = interpretRecipes();
 	intialAccordions();
 	interpretRecipes();
-	unlockMaterialPanels();
 
-	currentWorld = new World(0, "White Void");
-	aGrid = new Grid(new Point(9, 9));
-	aGrid.pos = new Point(5, 5);
-	currentWorld.enter(aGrid);
-	fixScreenDims();
-	console.log(currentWorld);
-	maintainServerLoop();
-}
-
-function serverTick(skippedTicks) {
-	longRefreshCounter += skippedTicks;
-	currentWorld.onTick(skippedTicks);
-	if(longRefreshCounter > longRefreshInterval){
-		longRefresh();
-		longRefreshCounter = 0;
+	let loadedInfo = localStorage.getItem("gameData");
+	if(loadedInfo){
+		console.log("Loading game from local storage...");
+		let info = JSON.parse(loadedInfo);
+		load(info);
+		console.log(info);
+	}else{
+		// new game setup
+		currentWorld = new World("The Grid");
+		worlds["The Grid"] = currentWorld;
+		aGrid = new Grid(new Point(9, 9));
+		aGrid.pos = new Point(5, 5);
+		currentWorld.enter(aGrid);
 	}
 
-	Material.prototype.updateAllDetails();
+	unlockMaterialPanels();
+	fixScreenDims();
+	console.log(currentWorld);
+
+	setInterval(serverTick, 50);
 	redraw();
 }
 
-// calls every 10 ticks or so... not precise
-function longRefresh(){
+function serverTick() {
+	Material.prototype.updateAllDetails();
+	tickCounter++;
+	currentWorld.onTick();
+	if(tickCounter % 10 == 0){
+		halfSecondTick();
+
+		if(tickCounter % 40 == 0){
+			secondSecondTick();
+		}
+	}
+	window.requestAnimationFrame(redraw);
+}
+
+// calls every half second
+function halfSecondTick() {
 	unlockMaterialPanels();
 }
 
-// ticks every second
-function secondTick(skippedSeconds){
+// ticks every 2 second
+function secondSecondTick() {
 	for (var i = 0; i < matList.length; i++) {
 		let mat = matList[i];
-		mat.updateStats(skippedSeconds);
+		mat.updateStats();
 	}
-}
-
-function maintainServerLoop() {
-	var currentTime = Date.now();
-	var lastTime = currentTime;
-	var deltaTime = 0; //30 times a second
-	var deltaTime2 = 0; //once a second
-
-	function requestNext() {
-		window.requestAnimationFrame(serverLoopIteration);
-	};
-
-	function serverLoopIteration() {
-		currentTime = Date.now();
-
-		deltaTime += currentTime - lastTime;
-		if (deltaTime > ticksPerSecond) {
-			serverTick(Math.floor(deltaTime / ticksPerSecond));
-			requestNext();
-			deltaTime = deltaTime % ticksPerSecond;
-		} else {
-			setTimeout(requestNext, ticksPerSecond - deltaTime);
-		}
-
-		deltaTime2 += currentTime - lastTime;
-		if(deltaTime2 > 1000){
-			secondTick(Math.floor(deltaTime2 / 1000));
-			deltaTime2 = deltaTime2 % 1000;
-		}
-
-		lastTime = currentTime;
-	}
-
-	serverLoopIteration();
 }
 
 function redraw() {
@@ -124,20 +105,23 @@ function intialAccordions() {
 	}
 }
 
+function accordionLogic() {
+	var panel = this.nextElementSibling;
+	if (this.hasAttribute("open")) {
+		this.removeAttribute("open");
+		panel.removeAttribute("open");
+	} else {
+		this.setAttribute("open", true);
+		panel.setAttribute("open", true);
+	}
+	if (this.hasAttribute("new")) {
+		this.removeAttribute("new");
+	}
+}
+
 function addAccordionLogic(div) {
-	div.addEventListener("click", function() {
-		var panel = this.nextElementSibling;
-		if (this.hasAttribute("open")) {
-			this.removeAttribute("open");
-			panel.removeAttribute("open");
-		} else {
-			this.setAttribute("open", true);
-			panel.setAttribute("open", true);
-		}
-		if(this.hasAttribute("new")){
-			this.removeAttribute("new");
-		}
-	});
+	div.removeEventListener("click", accordionLogic)
+	div.addEventListener("click", accordionLogic);
 }
 
 function unlockMaterialPanels() {
@@ -150,22 +134,79 @@ function unlockMaterialPanels() {
 			percent = Math.min(percent, ingredient[0].counter / ingredient[1]);
 		}
 
-		if(percent >= mat.unlockPercentage){
+		if (percent >= mat.unlockPercentage) {
 			mat.unlocked = true;
 			mat.unhidden = true;
 			mat.createPanel();
-			console.log("mat unlocked: " + mat.name);
 			unlocked.push(i);
-		}else if(percent >= mat.unhidePercentage && !mat.unhidden){
+			console.log("mat unlocked: " + mat.name);
+		} else if (percent >= mat.unhidePercentage && !mat.unhidden) {
 			mat.unhidden = true;
 			mat.createMysteryPanel();
 			console.log("mat revealed: " + mat.name);
 		}
 	}
 	// remove unlocked mats from lockedMats
-	for (var i = unlocked.length-1; i >= 0; i--) {
-		lockedMats.splice(i,1);
+	for (var i = unlocked.length - 1; i >= 0; i--) {
+		lockedMats.splice(i, 1);
 	}
+}
+
+function exportData() {
+	info = {};
+
+	matData = {};
+	for(let i=0; i<matList.length; i++){
+		mat = matList[i];
+		if(mat.counter + mat.usedCounter > 0){
+			matData[mat.name] = {"n":mat.counter, "un":mat.usedCounter};
+		}
+	}
+	info["mats"] = matData;
+	worldData = {};
+	for(let wname in worlds){
+		world = worlds[wname];
+		actorData = [];
+		for(let aname in world.actors){
+			datum = {};
+			world.actors[aname].saveInfo(datum);
+			actorData.push(datum);
+		}
+		worldData[world.name] = {"actors":actorData}
+	}
+	info["worlds"] = worldData;
+	info["activeWorld"] = currentWorld.name;
+	return info;
+}
+
+function save(){
+	localStorage.setItem("gameData",JSON.stringify(exportData()));
+}
+
+function load(info){
+	let matData = info["mats"];
+	for(let mname in matData){
+		let mDatum = matData[mname];
+		let mat = materialTypes[mname];
+		mat.counter = mDatum['n'];
+		mat.usedCounter = mDatum['un'];
+	}
+
+	let worldData = info["worlds"];
+	for(let wname in worldData){
+		let worldDatum = worldData[wname];
+		let world = new World(wname);
+		worlds[wname] = world;
+
+		let actorData = worldDatum["actors"];
+		for(let adi in actorData){
+			let actorDatum = actorData[adi];
+			let actor = new actorTypeDict[actorDatum["type"]].prototype.constructor();
+			actor.loadInfo(actorDatum);
+			world.enter(actor);
+		}
+	}
+	currentWorld = worlds[info["activeWorld"]];
 }
 
 function fixScreenDims() {

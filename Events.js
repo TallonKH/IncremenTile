@@ -1,11 +1,14 @@
 window.onresize = fixScreenDims;
 
+window.onbeforeunload = function(e) {
+	save();
+};
+
 canvas.onmousedown = function(event) {
 	totalMouseDelta = new Point(0, 0);
 	mouseDown = true;
 	mouseDownPos = calcMousePos(event);
 	mouseDownCaught = currentWorld.onMouseDown(mouseDownPos);
-	//TODO translate mouse coords to actor bounding box coords properly
 }
 
 canvas.onmouseup = function(event) {
@@ -14,19 +17,32 @@ canvas.onmouseup = function(event) {
 	mouseUpCaught = currentWorld.onMouseUp(calcMousePos(event));
 }
 
-canvas.addEventListener('mousewheel',function(event){
-	if(event.ctrlKey){
+document.onkeydown = function(event) {
+	if (event.ctrlKey) {
+		if (event.keyCode == 83) {
+			save();
+			console.log("SAVING MANUALLY");
+			console.log(JSON.parse(localStorage.getItem("gameData")));
+		} else if (event.keyCode == 68){
+			localStorage.clear();
+			console.log("CLEARING LOCAL STORAGE");
+		}
+	}
+}
+
+canvas.addEventListener('mousewheel', function(event) {
+	if (event.ctrlKey) {
 		let prev = zoomAmount;
 		zoomCounter -= event.deltaY;
-		zoomCounter = Math.max(Math.min(zoomCounter, 1000),0);
-		zoomAmount = Math.pow(10,zoomCounter/1000);
-		let diff = (zoomAmount - prev)/canvasSize;
-		viewportPos = viewportPos.addp(new Point(0.5,0.5).multiply1(diff));
-	}else{
-		viewportPos = viewportPos.add2(event.deltaX/zoomAmount/10,event.deltaY/zoomAmount/10);
+		zoomCounter = Math.max(Math.min(zoomCounter, 1000), 0);
+		zoomAmount = Math.pow(10, zoomCounter / 1000);
+		let diff = (zoomAmount - prev) / canvasSize;
+		viewportPos = viewportPos.addp(new Point(0.5, 0.5).multiply1(diff));
+	} else {
+		viewportPos = viewportPos.add2(event.deltaX / zoomAmount / 10, event.deltaY / zoomAmount / 10);
 	}
 	event.preventDefault();
-  return false;
+	return false;
 }, false);
 
 canvas.onmousemove = function(event) {

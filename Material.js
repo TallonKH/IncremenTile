@@ -27,12 +27,11 @@ class Material {
 		this.statsDiv = null;
 	}
 
-	updateStats(skippedSeconds){
+	updateStats(){
 		if(this.unlocked){
 			let str = "<b>Stats</b>";
-			str += "<br /><font color=\'#149d19\'>+ " + (this.genPerSecCounter / skippedSeconds) + " per second</font>";
-			str += "<br /><font color=\'#b60f0f\'>- " + (this.usePerSecCounter / skippedSeconds) + " per second</font>";
-			let use = this.usePerSecCounter / skippedSeconds;
+			str += "<br /><font class=\"mono\" color=\'#149d19\'> + " + (this.genPerSecCounter/2) + " per second</font>";
+			str += "<br /><font class=\"mono\" color=\'#b60f0f\'> - " + (this.usePerSecCounter/2) + " per second</font>";
 
 			this.genPerSecCounter = 0;
 			this.usePerSecCounter = 0;
@@ -70,7 +69,7 @@ class Material {
 		"<button class=\"accordion mat-abutton\" new=\"true\" style=\"background-color: " + this.primaryColor + "; border-color: " +
 		this.secondaryColor + "; color: " + this.secondaryColor + ";\">" +
 			this.displayName + " : " + this.counter +
-		"</button><div class=\"accordion-pane mat-apane\"><div class=\"mat-buttons\"></div> <div class=\"mat-details\"></div><div class=\"mat-stats\"></div></div>";
+		"</button><div class=\"accordion-pane mat-apane\"><div class=\"mat-buttons\"></div><div class=\"mat-details\"></div><hr><div class=\"mat-stats\"></div></div>";
 
 		if(this.panelDiv != null){
 			this.panelDiv.innerHTML = inner;
@@ -152,7 +151,7 @@ class Material {
 
 	generateUnlockProgressBars(){
 		if(!this.unlocked){
-			let divs = "<b>UNLOCK</b><br /><div style=\"margin-left: 10px;\">";
+			let divs = "<b>UNLOCK</b><br /><div style=\"margin-left: 5px;\">";
 			for (var i = 0; i < this.recipe.length; i++) {
 				let req = this.recipe[i];
 				let mat = req[0];
@@ -218,7 +217,7 @@ class Material {
 
 	generateCraftProgressBars(){
 		if(this.unlocked && this.recipe.length > 0){
-			let divs = "<div style=\"margin-left: 10px;\">";
+			let divs = "<div style=\"margin-left: 5px;\">";
 			for (var i = 0; i < this.recipe.length; i++) {
 				let req = this.recipe[i];
 				let mat = req[0];

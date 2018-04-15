@@ -1,12 +1,17 @@
 class TileType {
 	constructor(name) {
 		this.name = name;
-		this.onTick = Function.prototype; // (grid, data, skippedTicks)
+		this.onTick = Function.prototype; // (grid, data)
+		this.simulatedClick = Function.prototype; // (grid,data,fCoord)
 		this.onMouseClicked = Function.prototype; // (grid,data,fCoord)
 		this.destroyed = function(){if(this.associatedMaterial){this.associatedMaterial.unplace();}}; // (grid,data,replacementTypeName)
+		this.preserveInfo = false;
+		this.saveInfo = Function.prototype;
+		this.loadInfo = Function.prototype;
 		this.created = Function.prototype; // (grid,data)
 		this.draw = Function.prototype; // (grid,data,renderX,renderY,renderScale)
 		this.associatedMaterial = null;
+		this.char = ' ';
 		this.initialData = function(grid, x, y) {
 			return {
 				"dims": new Point(x, y),
@@ -39,7 +44,10 @@ class TileType {
 		let mid = 0.5 * renderScale
 		ctx.fillText(text, renderX + mid, renderY + mid);
 	}
-	drawBasicTimer(misc, size = 0.5, percent) {
+	drawBasicTimer(misc, size = 0.4, percent) {
+		let stk = ctx.strokeStyle;
+		let lnw = ctx.lineWidth;
+
 		let [grid, data, renderX, renderY, renderScale] = misc;
 
 		let mid = 0.5 * renderScale;
@@ -57,6 +65,9 @@ class TileType {
 		ctx.beginPath();
 		ctx.arc(midX, midY, size, 0, percent * TAU);
 		ctx.stroke();
+
+		ctx.strokeStyle = stk;
+		ctx.lineWidth = lnw;
 	}
 	drawPulser(misc) {
 		let [grid, data, renderX, renderY, renderScale] = misc;
@@ -64,7 +75,7 @@ class TileType {
 		let midX = renderX + mid;
 		let midY = renderY + mid;
 		let cd = data["cooldown"][0];
-		let ticker = data["max_cooldown"][0] - cd;
+		let ticker = data["max_cooldown"] - cd;
 		ctx.lineWidth = 0.03 * renderScale;
 		let c1 = (activeColor + "55");
 		let c2 = (inactiveColor + "55");

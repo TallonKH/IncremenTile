@@ -1,6 +1,5 @@
 class World {
-	constructor(id, name) {
-		this.id = id;
+	constructor(name) {
 		this.name = name;
 		this.actors = [];
 		this.mouseListeners = [];
@@ -84,7 +83,7 @@ class World {
 		return false;
 	}
 
-	onTick(skippedTicks) {
+	onTick() {
 		while (this.actorsPendingExit.length > 0) {
 			this.exitNow(this.actorsPendingExit.pop());
 		}
@@ -93,13 +92,7 @@ class World {
 		}
 
 		for (let i = 0; i < this.actorsPendingTick.length; i++) {
-			this.actorsPendingTick[i].onTick(skippedTicks);
-		}
-
-		// do things that cannot be multiplied
-		while (skippedTicks > 0) {
-			//...
-			skippedTicks--;
+			this.actorsPendingTick[i].onTick();
 		}
 	}
 }

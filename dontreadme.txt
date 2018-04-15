@@ -34,8 +34,10 @@ Generators: add 1 material to chache
  * - TIER: lower cooldown
  */
 
-//BALANCE PHILOSOPHY
+//IDEAS
 /*
+ * add button to recenter on grid to avoid getting lost
+ *
  * Every tile type gets increasingly expensive
  * - prevents spamming generators everywhere
  *
@@ -92,3 +94,28 @@ Generators: add 1 material to chache
  *
  * Aα, Bβ, Γγ ... Ωω : (tier unlocked: alpha, beta, etc)
  */
+
+ //TODO
+ /*
+  * cancel button
+	*
+	* recenter button
+	*
+	* highlight block that cursor is over
+	*
+	* retexture pulser / timer
+	*
+	* achievements
+	*
+	* multiplier
+	*
+	* import/export as txt
+	*
+	* replace "GRID" with grid's name
+	*
+	*
+	*
+	*
+	*
+	*
+	*/

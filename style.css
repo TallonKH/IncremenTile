@@ -3,11 +3,18 @@
 }
 
 * {
-	font-family: "Arial";
+	font-family: "Roboto";
+	font-weight: 400;
 }
 
 body {
 	background-color: #eeeeee;
+}
+
+hr {
+	border: 0;
+  height: 1px;
+  background: #bbbbbb;
 }
 
 .flex-container#main-flex {
@@ -142,6 +149,7 @@ body {
 	border: none;
 	color: white;
 	margin: 5px;
+	margin-left: 0px;
 	padding: 5px 16px;
 	text-align: center;
 	text-decoration: none;
@@ -166,6 +174,11 @@ body {
 	background-color: #2cd023;
 }
 
+.mono{
+	font-family: "Roboto Mono";
+	margin-left: 5px;
+}
+
 .mat-abutton {
 	font-size: 18px;
 	padding: 5px;
@@ -173,7 +186,6 @@ body {
 }
 
 .mat-stats {
-	padding-top: 5px;
 }
 
 progress[value]{
