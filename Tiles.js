@@ -109,6 +109,12 @@ function generateTileTypes(types, charDict) {
 	tile.created = function(grid, data) {
 		grid.requestNextTick(data["coord"]);
 	}
+	tile.saveInfo = function(data){
+		return data["clicks"][0];
+	}
+	tile.loadInfo = function(data, json){
+		data["clicks"] = [json["clicks"]];
+	}
 	tile.simulatedClick = function(grid, data) {
 		if(data["clicks"][0] == 0){
 			return this.onMouseClicked(grid,data)

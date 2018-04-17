@@ -75,7 +75,7 @@ class Grid extends Actor {
 					data.push({
 						"x": x,
 						"y": y,
-						"data": tile.saveInfo(this.tileData[x][y])
+						"tags": tile.saveInfo(this.tileData[x][y])
 					});
 				}
 			}
@@ -108,11 +108,13 @@ class Grid extends Actor {
 				n++;
 			}
 		}
-		for(let d in info["gdata"]){
-			let existing = this.tileData[d["x"]][d["y"]];
-			for(let a in d){
-				existing[a] = d[a];
-			}
+
+		let gdata = info["gdata"];
+		for(let key in gdata){
+			let td = gdata[key];
+			let x = td["x"];
+			let y = td["y"];
+			this.tiles[x][y].loadInfo(this.tileData[x][y], td["tags"]);
 		}
 	}
 

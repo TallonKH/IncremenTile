@@ -1,7 +1,6 @@
 function generateMaterialTypes(mats) {
 	mat_bit_alpha.unhidePercentage = 0;
 	mat_bit_alpha.unlockPercentage = 0;
-	mat_bit_alpha.counter = 4;
 	mat_bit_alpha.craftable = false;
 	mat_bit_alpha.consumable = false;
 	mats["bit_alpha"] = (mat_bit_alpha);

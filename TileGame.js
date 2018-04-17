@@ -42,12 +42,12 @@ function main() {
 	intialAccordions();
 	interpretRecipes();
 
-	let loadedInfo = localStorage.getItem("gameData");
-	if(loadedInfo){
+	let infoString = localStorage.getItem("gameData");
+	if(infoString){
 		console.log("Loading game from local storage...");
-		let info = JSON.parse(loadedInfo);
+		console.log(infoString);
+		let info = JSON.parse(infoString);
 		load(info);
-		console.log(info);
 	}else{
 		// new game setup
 		currentWorld = new World("The Grid");
@@ -55,6 +55,8 @@ function main() {
 		aGrid = new Grid(new Point(9, 9));
 		aGrid.pos = new Point(5, 5);
 		currentWorld.enter(aGrid);
+		currentWorld.enter(new BGActor());
+		mat_bit_alpha.counter = 4;
 	}
 
 	unlockMaterialPanels();
@@ -190,6 +192,10 @@ function load(info){
 		let mat = materialTypes[mname];
 		mat.counter = mDatum['n'];
 		mat.usedCounter = mDatum['un'];
+		for (let i = 0; i < mat.recipe.length; i++) {
+			let req = mat.recipe[i];
+			req[3] = Math.ceil(req[1] * Math.pow(req[2], mat.usedCounter + mat.counter));
+		}
 	}
 
 	let worldData = info["worlds"];

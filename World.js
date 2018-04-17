@@ -7,9 +7,6 @@ class World {
 		this.actorsPendingEnter = [];
 		this.actorsPendingExit = [];
 		this.actorsPendingTick = [];
-
-		this.background = new BGActor();
-		this.enter(this.background);
 	}
 	// put an actor into the world
 	enterNow(actor) {
@@ -87,6 +84,7 @@ class World {
 		while (this.actorsPendingExit.length > 0) {
 			this.exitNow(this.actorsPendingExit.pop());
 		}
+
 		while (this.actorsPendingEnter.length > 0) {
 			this.enterNow(this.actorsPendingEnter.pop());
 		}

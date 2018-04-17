@@ -4,13 +4,17 @@ class TileType {
 		this.onTick = Function.prototype; // (grid, data)
 		this.simulatedClick = Function.prototype; // (grid,data,fCoord)
 		this.onMouseClicked = Function.prototype; // (grid,data,fCoord)
-		this.destroyed = function(){if(this.associatedMaterial){this.associatedMaterial.unplace();}}; // (grid,data,replacementTypeName)
+		this.destroyed = function() {
+			if (this.associatedMaterial) {
+				this.associatedMaterial.unplace();
+			}
+		}; // (grid,data,replacementTypeName)
 		this.preserveInfo = false;
-		this.saveInfo = Function.prototype;
-		this.loadInfo = Function.prototype;
+		this.saveInfo = Function.prototype; // (tileData)
+		this.loadInfo = Function.prototype; // (jsonData)
 		this.created = Function.prototype; // (grid,data)
 		this.draw = Function.prototype; // (grid,data,renderX,renderY,renderScale)
-		this.associatedMaterial = null;
+		this.associatedMaterial =  null;
 		this.char = ' ';
 		this.initialData = function(grid, x, y) {
 			return {

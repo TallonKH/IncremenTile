@@ -109,13 +109,5 @@ Generators: add 1 material to chache
 	*
 	* multiplier
 	*
-	* import/export as txt
-	*
 	* replace "GRID" with grid's name
-	*
-	*
-	*
-	*
-	*
-	*
 	*/
