@@ -13,30 +13,132 @@ body {
 
 hr {
 	border: 0;
-  height: 1px;
-  background: #bbbbbb;
+	height: 1px;
+	background: #bbbbbb;
 }
 
-.buttonstack button {
+.buttonstack {
 	user-select: none;
 	display: block;
-	background-color: #aaaaaa;
-	transition: background-color 0.4s, border-bottom 0.4s;
-  border: none;
-  color: white;
-	width: 48px;
-	height: 48px;
-  padding: 12px;
-	border-bottom: 2px solid #999999;
-  text-align: center;
-	line-height: 24px;
-  text-decoration: none;
-  font-size: 24px;
+	width: 10%;
 }
 
-.buttonstack button:hover{
-	background-color: #bd0505;
-	border-bottom: 2px solid #6b0000;
+.tooltip {
+	position: relative;
+	display: inline-block;
+}
+
+.tooltip .tooltiptext {
+	pointer-events: none;
+	visibility: hidden;
+	width: 120px;
+	background-color: #333333;
+	color: #fff;
+	text-align: center;
+	padding: 5px 0;
+	font-size: 14px;
+	/* Position the tooltip text */
+	position: absolute;
+	z-index: 1;
+	bottom: 100%;
+	left: 50%;
+	margin-left: -60px;
+	/* Fade in tooltip */
+	opacity: 0;
+	transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+	content: "";
+	position: absolute;
+	top: 100%;
+	left: 50%;
+	margin-left: -5px;
+	border-width: 5px;
+	border-style: solid;
+	border-color: #333333 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+	visibility: visible;
+	opacity: 1;
+}
+
+button.stackbutton {
+	outline: none;
+	background-color: #aaaaaa;
+	transition: background-color 0.3s, border-bottom 0.3s;
+	border: none;
+	color: white;
+	width: 48px;
+	height: 48px;
+	border-bottom: 2px solid #999999;
+	text-align: center;
+	line-height: 24px;
+	text-decoration: none;
+}
+
+.material-icons {
+	font-size: 34px;
+	vertical-align: middle;
+	text-align: center;
+}
+
+button.stackbutton#info:hover {
+	background-color: #6407db;
+	border-bottom: 2px solid #2b0a73;
+}
+
+button.stackbutton#delete:hover {
+	background-color: #cf3a3a;
+	border-bottom: 2px solid #af1818;
+}
+
+button.stackbutton#recenter:hover {
+	background-color: #3acf56;
+	border-bottom: 2px solid #108740;
+}
+
+button.stackbutton#download:hover {
+	background-color: #7ca9d2;
+	border-bottom: 2px solid #5992aa;
+}
+
+button.stackbutton#upload:hover {
+	background-color: #7ca9d2;
+	border-bottom: 2px solid #5992aa;
+}
+
+button.stackbutton#clear:hover {
+	background-color: #4b0000;
+	border-bottom: 2px solid #000000;
+}
+
+@keyframes resetglow {
+	0% {
+		box-shadow: 0px 0px 16px #b90000;
+		background-position: 0px 0px;
+	}
+	50%{
+		box-shadow: 0px 0px 32px #ff0000;
+	}
+	100% {
+		box-shadow: 0px 0px 16px #b90000;
+		background-position: 12px 0px;
+	}
+}
+
+button.stackbutton#clear[active] {
+	animation-name: resetglow;
+	animation-duration: 0.5s;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+	animation-direction: normal;
+	background: repeating-linear-gradient(
+	56.3099deg, #3e0000 0px, #3e0000 5px, #b80000 5px, #b80000 10px
+	);
+	background-color: #4b0000;
+	border: 0px solid #000000;
 }
 
 .flex-container#main-flex {
@@ -73,12 +175,26 @@ hr {
 }
 
 .pane#menu {
-	flex-grow: 1;
+	/*flex-grow: 1;*/
 	flex-basis: 40%;
+}
+
+.pane#buttonstack-pane {
+	flex-basis: 0%;
 }
 
 .pane#grid-pane {
 	flex-basis: 60%;
+}
+
+.popup-background {
+	display: none;
+	z-index: 1;
+	overflow: auto;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.2);
+	position: fixed;
 }
 
 .accordion {
@@ -88,10 +204,9 @@ hr {
 	border: none;
 	outline: none;
 	transition: background-color 0.2s;
-
 }
 
-.accordion.main{
+.accordion.main {
 	background-color: #bbbbbb;
 	color: #eeeeee;
 	padding: 8px;
@@ -100,15 +215,16 @@ hr {
 
 .accordion.main:after {
 	/*content: '\02795'; /* unicode '+' */
-	content: "▽";
+	content: "△";
 	text-align: center;
 	font-size: 20px;
 	color: #eeeeee;
 	float: right;
+	transition: transform 0.4s ease;
 }
 
 .accordion.main[open]:after {
-	content: "△";
+	transform: rotateX(-180deg);
 }
 
 .accordion:hover {
@@ -124,37 +240,15 @@ hr {
 }
 
 .accordion-pane {
-	max-height: 0;
-	overflow: hidden;
-	transition: max-height 0.2s ease-out, padding 0.3s, border-bottom 0.2s;
-}
-
-.accordion-pane.main{
-	background-color: #ededed;
-	padding: 0px;
-	padding-left: 5px;
-	padding-right: 5px;
-	border-bottom: 2px solid #a4a4a4;
-}
-
-.accordion-pane[open]{
-	transition: max-height 0.2s ease-in, padding 0.3s;
-	max-height: 800px;
+	max-height: 600px;
 	overflow: scroll;
-}
-
-.accordion-pane.main[open] {
-	padding: 10px;
-	padding-bottom: 0px;
-	border-bottom: 2px solid #dddddd;
 }
 
 .info-pane {
 	max-height: 400px;
 	background-color: #cccccc;
 	padding: 5px;
-	margin: 0px;
-	margin-bottom: 10px;
+	margin: 10px 0px;
 }
 
 .info-pane h2 {
@@ -169,6 +263,7 @@ hr {
 	background-color: #606060;
 	transition: background-color 0.2s;
 	border: none;
+	outline: none;
 	color: white;
 	margin: 5px;
 	margin-left: 0px;
@@ -177,6 +272,7 @@ hr {
 	text-decoration: none;
 	box-sizing: border-box;
 	display: inline-block;
+	user-select: none;
 	font-size: 16px;
 }
 
@@ -196,7 +292,7 @@ hr {
 	background-color: #2cd023;
 }
 
-.mono{
+.mono {
 	font-family: "Roboto Mono";
 	margin-left: 5px;
 }
@@ -207,10 +303,9 @@ hr {
 	margin: 0px;
 }
 
-.mat-stats {
-}
+.mat-stats {}
 
-progress[value]{
+progress[value] {
 	-webkit-appearance: none;
 	appearance: none;
 	height: 20px;
@@ -218,31 +313,34 @@ progress[value]{
 	float: right;
 }
 
-progress[value]::-webkit-progress-bar{
+progress[value]::-webkit-progress-bar {
 	background-color: #eeeeee;
 	border: 2px solid #bbbbbb;
 }
 
-progress[value]::-webkit-progress-value{
+progress[value]::-webkit-progress-value {
 	background-color: #99aaee;
 }
 
 canvas {
 	display: inline;
-	margin-top: -144px;
-	margin-left: 54px;
 	border: 3px solid #aaaaaa;
 	padding: 0;
 	user-select: none;
+	display: inline-block;
 }
 
-@keyframes glowbox {
-		0% {box-shadow: 0px 0px 2px #00b934;}
-		100% {box-shadow: 0px 0px 24px #00ff0a;}
+@keyframes newglow {
+	0% {
+		box-shadow: 0px 0px 2px #00b934;
+	}
+	100% {
+		box-shadow: 0px 0px 24px #00ff0a;
+	}
 }
 
-*[new]{
-	animation-name: glowbox;
+*[new] {
+	animation-name: newglow;
 	animation-duration: 0.5s;
 	animation-timing-function: ease-in;
 	animation-iteration-count: infinite;

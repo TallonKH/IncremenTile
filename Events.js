@@ -1,8 +1,18 @@
+$(function(){
+	// make sure this happens after page is fully loaded
+	// to prevent saving too early
+
+	window.onbeforeunload = function(e) {
+		if (pendingReset) {
+			localStorage.clear();
+		} else {
+			save();
+		}
+	};
+});
+
 window.onresize = fixScreenDims;
 
-window.onbeforeunload = function(e) {
-	save();
-};
 
 canvas.onmousedown = function(event) {
 	totalMouseDelta = new Point(0, 0);
@@ -18,16 +28,7 @@ canvas.onmouseup = function(event) {
 }
 
 document.onkeydown = function(event) {
-	if (event.ctrlKey) {
-		if (event.keyCode == 83) {
-			save();
-			console.log("SAVING MANUALLY");
-			console.log(JSON.parse(localStorage.getItem("gameData")));
-		} else if (event.keyCode == 68){
-			localStorage.clear();
-			console.log("CLEARING LOCAL STORAGE");
-		}
-	}
+
 }
 
 canvas.addEventListener('mousewheel', function(event) {
@@ -52,6 +53,42 @@ canvas.onmousemove = function(event) {
 	//do stuff
 	lastMousePos = currentMousePos;
 }
+
+
+
+$(function(){
+	$(".stackbutton#info").click(function(e) {
+		alert("[insert info]");
+	});
+	$(".stackbutton#delete").click(function(e) {
+
+	});
+
+	$(".stackbutton#recenter").click(function(){
+		viewportPos = new Point(-5,-5);
+	})
+
+	getChildDivById(buttonStack, "download").onmousedown = function() {
+		prompt("This text contains your current save data:\n", JSON.stringify(exportData()));
+	}
+	getChildDivById(buttonStack, "upload").onmousedown = function() {
+
+	}
+	clearButton = getChildDivById(buttonStack, "clear")
+	clearButton.onmousedown = function() {
+		if (pendingReset) {
+			alert("Reset cancelled.");
+			clearButton.removeAttribute("active");
+			pendingReset = false;
+		} else {
+			if (confirm("This will reset the game next time you open it. Are you sure?")) {
+				alert("Ok. Refresh or reopen the page to reset the game. Click the icon again to cancel.");
+				pendingReset = true;
+				clearButton.setAttribute("active", true);
+			}
+		}
+	}
+});
 
 function calcMousePos(event) {
 	return new Point((event.clientX - canvas.offsetLeft + window.pageXOffset) / zoom + viewportPos.x, (event.clientY - canvas.offsetTop + window.pageYOffset) / zoom + viewportPos.y);

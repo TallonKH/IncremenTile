@@ -110,10 +110,12 @@ function generateTileTypes(types, charDict) {
 		grid.requestNextTick(data["coord"]);
 	}
 	tile.saveInfo = function(data){
+		console.log('SAVED')
+		console.log(data["clicks"][0]);
 		return data["clicks"][0];
 	}
 	tile.loadInfo = function(data, json){
-		data["clicks"] = [json["clicks"]];
+		data["clicks"] = [json];
 	}
 	tile.simulatedClick = function(grid, data) {
 		if(data["clicks"][0] == 0){
