@@ -145,7 +145,6 @@ function initialUnlockMaterialPanels() {
 		if(mat.unlocked){
 			console.log("UNLOCKED PANEL");
 			mat.createPanel(false);
-			mat.updateStats();
 			console.log("mat pre-unlocked: " + mat.name);
 			unlocked.push(i);
 		}else if(mat.unhidden){

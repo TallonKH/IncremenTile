@@ -1,6 +1,6 @@
 let activeColor = "#88ccff";
 let inactiveColor = "#4444aa";
-let fillColorAlpha = "#bb6622";
+	let fillColorAlpha = "#bb6622";
 let lineColorAlpha = "#441100";
 let fillColorBeta = "#5ebb22";
 let lineColorBeta = "#2b6e00";

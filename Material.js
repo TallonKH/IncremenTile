@@ -138,7 +138,9 @@ class Material {
 		if (tagNew) {
 			tagAsNew(this.titleDiv);
 		}
+		
 		this.updateDetails();
+		this.updateStats();
 	}
 
 	createMysteryPanel() {

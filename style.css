@@ -240,7 +240,7 @@ button.stackbutton#clear[active] {
 }
 
 .accordion-pane {
-	max-height: 600px;
+	max-height: 400px;
 	overflow: scroll;
 }
 
@@ -302,8 +302,6 @@ button.stackbutton#clear[active] {
 	padding: 5px;
 	margin: 0px;
 }
-
-.mat-stats {}
 
 progress[value] {
 	-webkit-appearance: none;
