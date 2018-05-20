@@ -27,20 +27,42 @@ canvas.onmouseup = function(event) {
 	mouseUpCaught = currentWorld.onMouseUp(calcMousePos(event));
 }
 
-document.onkeydown = function(event) {
+function calcMousePos2(event) {
+	return new Point((event.clientX + window.pageXOffset - canvas.offsetLeft), (event.clientY + window.pageYOffset - canvas.offsetTop));
+	// return new Point((event.clientX + window.pageXOffset), (event.clientY + window.pageYOffset));
+}
 
+document.onkeypress = function(event){
+	if(event.ctrlKey){
+		switch(event.key){
+			case '-':{
+				let center = 0.5 * canvasSize
+				changeZoom(zoomAmount * 200, new Point(center,center));
+				break
+			}
+			case '=':{
+				let center = 0.5 * canvasSize
+				changeZoom(zoomAmount * -200, new Point(center,center));
+				break
+			}
+		}
+	}
+}
+
+function changeZoom(change, center){
+	let prevZoom = zoomAmount;
+	zoomCounter -= change;
+	zoomCounter = Math.max(Math.min(zoomCounter, 1000), -400);
+	zoomAmount = 1 + zoomCounter/500;
+	diff = (zoomAmount - prevZoom);
+	viewportPos = viewportPos.addp(center.addp(viewportPos).divide1(prevZoom).multiply1(diff))
 }
 
 canvas.addEventListener('mousewheel', function(event) {
 	if (event.ctrlKey) {
-		let prev = zoomAmount;
-		zoomCounter -= event.deltaY;
-		zoomCounter = Math.max(Math.min(zoomCounter, 1000), 0);
-		zoomAmount = Math.pow(10, zoomCounter / 1000);
-		let diff = (zoomAmount - prev) / canvasSize;
-		viewportPos = viewportPos.addp(new Point(0.5, 0.5).multiply1(diff));
+		changeZoom(event.deltaY, windowMousePos);
 	} else {
-		viewportPos = viewportPos.add2(event.deltaX / zoomAmount / 10, event.deltaY / zoomAmount / 10);
+		viewportPos = viewportPos.add2(event.deltaX, event.deltaY);
 	}
 	event.preventDefault();
 	return false;
@@ -48,6 +70,7 @@ canvas.addEventListener('mousewheel', function(event) {
 
 canvas.onmousemove = function(event) {
 	currentMousePos = calcMousePos(event);
+	windowMousePos = calcMousePos2(event)
 	lastMouseDelta = lastMousePos.subtractp(currentMousePos);
 	totalMouseDelta = mouseDownPos.subtractp(currentMousePos);
 	//do stuff
@@ -65,7 +88,8 @@ $(function(){
 	});
 
 	$(".stackbutton#recenter").click(function(){
-		viewportPos = new Point(-5,-5);
+		zoomAmount = 1
+		viewportPos = new Point(-canvasSize / 20, -canvasSize / 20);
 	})
 
 	getChildDivById(buttonStack, "download").onmousedown = function() {
@@ -92,8 +116,4 @@ $(function(){
 
 function calcMousePos(event) {
 	return new Point((event.clientX - canvas.offsetLeft + window.pageXOffset) / zoom + viewportPos.x, (event.clientY - canvas.offsetTop + window.pageYOffset) / zoom + viewportPos.y);
-}
-
-function calcMousePos2(event) {
-	return new Point((event.clientX - canvas.offsetLeft + window.pageXOffset) / zoom, (event.clientY - canvas.offsetTop + window.pageYOffset) / zoom);
 }

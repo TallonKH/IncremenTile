@@ -17,7 +17,7 @@ class Actor {
 			return false;
 		};
 		this.draw = function(viewportPos, zoom) {
-			let renderPos = this.pos.subtractp(viewportPos).multiply1(zoom);
+			let renderPos = this.pos.subtractp(viewportPos);
 			let renderScale = this.scale * zoom; //viewportScale 0.5 = half screen, viewportScale 2 is 2x size
 			ctx.beginPath();
 			ctx.strokeStyle = "red";

@@ -52,7 +52,7 @@ class Grid extends Actor {
 		}
 
 		this.draw = function(viewportPos, zoom) {
-			let renderPos = this.pos.subtractp(viewportPos).multiply1(zoom);
+			let renderPos = this.pos.subtractp(viewportPos);
 			let renderScale = this.scale * zoom;
 			for (let y = 0; y < this.dims.y; y++) {
 				for (let x = 0; x < this.dims.x; x++) {
